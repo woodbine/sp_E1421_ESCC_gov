@@ -29,7 +29,7 @@ links = block.findAll('a', href=True)
 for link in links:
 	url = link['href']
 	if '.csv' in url or '.xls' in url:
-		title = link.contents[0]
+		title = link.text
 		print title
 		# create the right strings for the new filename
 		csvYr = title.split(' ')[-2]
