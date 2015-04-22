@@ -29,6 +29,7 @@ for link in links:
 	url = link['href']
 	if '.csv' in url or '.xls' in url:
 		title = link.contents[0]
+		print title
 		# create the right strings for the new filename
 		csvYr = title.split(' ')[-2]
 		csvMth = title.split(' ')[-3][:3]
