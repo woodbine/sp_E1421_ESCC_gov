@@ -27,7 +27,7 @@ block = soup.find('div', {'class':'text'})
 links = block.findAll('a', href=True)
 
 for link in links:
-	url = link['href']
+	url = 'http://www.eastsussex.gov.uk' + link['href']
 	if '.csv' in url or '.xls' in url:
 		title = link.text
 		if 'Payments over' in title:
