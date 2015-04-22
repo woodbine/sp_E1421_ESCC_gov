@@ -37,12 +37,11 @@ for link in links:
 		csvMth = convert_mth_strings(csvMth);
 		filename = "Qfile_" + entity_id + "_" + csvYr + "_" + csvMth + ".csv"
 	if '.csv' in url:
-		title = link.text
 		# create the right strings for the new filename
-		csvfile = title.split('/')[-1]
+		csvfile = url.split('/')[-1]
 		filename = "Qfile_" + entity_id + "_" + csvfile
 		
 		
-		todays_date = str(datetime.now())
-		scraperwiki.sqlite.save(unique_keys=['l'], data={"l": url, "f": filename, "d": todays_date })
-		print filename
+	todays_date = str(datetime.now())
+	scraperwiki.sqlite.save(unique_keys=['l'], data={"l": url, "f": filename, "d": todays_date })
+	print filename
