@@ -96,58 +96,62 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-block = soup.find('div', {'class':'text'})
-links = block.findAll('a', href=True)
+blocks = soup.find('div', {'class':'content text-content'}).find_all('ul')
+for block in blocks:
+    links = block.findAll('a', href=True)
 
-for link in links:
-    if 'http' not in link['href']:
-        url = 'http://www.eastsussex.gov.uk' + link['href']
-    url = link['href']
-    if '.xls' in url:
-        title = link.text
-        if ' to ' in title:
-            csvYr = title.split(' ')[-1]
-            if 'January to March' in title:
-                csvMth = 'Q1'
-            if 'April to June' in title:
-                csvMth = 'Q2'
-            if 'July to September' in title:
-                csvMth = 'Q3'
-            if 'October to December' in title:
-                csvMth = 'Q4'
-            csvMth = convert_mth_strings(csvMth.upper())
-            data.append([csvYr, csvMth, url])
-    if '.csv' in url:
-        title = link.previousSibling.encode('utf-8')
-        print title
-        if ' to ' in title:
-            csvYr = link.previousSibling.split(' ')[-3]
-            if 'January to March' in title:
-                csvMth = 'Q1'
-            if 'April to June' in title:
-                csvMth = 'Q2'
-            if 'July to September' in title:
-                csvMth = 'Q3'
-            if 'October to December' in title:
-                csvMth = 'Q4'
-            print title
-            csvMth = convert_mth_strings(csvMth.upper())
-            data.append([csvYr, csvMth, url])
+    for link in links:
+        if 'http' not in link['href']:
+            url = 'https://www.eastsussex.gov.uk' + link['href']
+        else:
+            url = link['href']
+        if '.xls' in url:
+            title = link.text
+            if 'spreadsheet' in title:
+                title=link.find_previous('li').text.encode('utf-8').split('–')[0].strip()
+            else:
+                title = link.find_previous('li').text.encode('utf-8').split('–')[0].strip()
+            if ' to ' in title:
+                csvYr = title.split(' ')[-1]
+                if 'January to March' in title:
+                    csvMth = 'Q1'
+                if 'April to June' in title:
+                    csvMth = 'Q2'
+                if 'July to September' in title:
+                    csvMth = 'Q3'
+                if 'October to December' in title:
+                    csvMth = 'Q4'
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
+            if 'Payments over' in title:
+                title = link.find_previous('li').text.encode('utf-8').split('–')[-1].strip()
+                csvYr = link.find_previous('li').text.encode('utf-8').split('–')[-1].strip().split(' ')[-1]
+                if 'January to March' in title:
+                    csvMth = 'Q1'
+                if 'April to June' in title:
+                    csvMth = 'Q2'
+                if 'July to September' in title:
+                    csvMth = 'Q3'
+                if 'October to December' in title:
+                    csvMth = 'Q4'
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
+        if '.csv' in url:
+            title = link.previousSibling.encode('utf-8')
+            if ' to ' in title:
+                csvYr = link.previousSibling.split(' ')[-3]
+                if 'January to March' in title:
+                    csvMth = 'Q1'
+                if 'April to June' in title:
+                    csvMth = 'Q2'
+                if 'July to September' in title:
+                    csvMth = 'Q3'
+                if 'October to December' in title:
+                    csvMth = 'Q4'
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
 
-    if '.pdf' in url:
-        title = link.text
-        if ' to ' in title:
-            csvYr = title.split(' ')[-1]
-            if 'January to March' in title:
-                csvMth = 'Q1'
-            if 'April to June' in title:
-                csvMth = 'Q2'
-            if 'July to September' in title:
-                csvMth = 'Q3'
-            if 'October to December' in title:
-                csvMth = 'Q4'
-            csvMth = convert_mth_strings(csvMth.upper())
-            data.append([csvYr, csvMth, url])
+
 
 #### STORE DATA 1.0
 
@@ -167,6 +171,7 @@ for row in data:
 
 if errors > 0:
     raise Exception("%d errors occurred during scrape." % errors)
+
 
 
 #### EOF
